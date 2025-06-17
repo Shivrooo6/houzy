@@ -148,7 +148,8 @@ class _BookingScreenState extends State<BookingScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(homeSizes[index]['label']),
-                      Text("\$${homeSizes[index]['price']}", style: const TextStyle(fontWeight: FontWeight.bold)),
+                      Text("AED ${homeSizes[index]['price']}", style: const TextStyle(fontWeight: FontWeight.bold)),
+
                     ],
                   ),
                 ),
@@ -301,12 +302,16 @@ class _BookingScreenState extends State<BookingScreen> {
           ),
         ),
         Row(
-          children: [
-            const Text("+\$25"),
-            const SizedBox(width: 10),
-            Switch(value: isPetFriendly, onChanged: (val) => setState(() => isPetFriendly = val)),
-          ],
-        ),
+  children: [
+    Text("+AED 25", style: const TextStyle(fontWeight: FontWeight.bold)),
+    const SizedBox(width: 10),
+    Switch(
+      value: isPetFriendly,
+      onChanged: (val) => setState(() => isPetFriendly = val),
+    ),
+  ],
+),
+
       ],
     );
   }
@@ -337,7 +342,9 @@ class _BookingScreenState extends State<BookingScreen> {
     );
   }
 
-  Widget _buildBookingSummary(String sizeLabel, int price) {
+Widget _buildBookingSummary(String sizeLabel, int price) {
+  final currencyFormat = NumberFormat.currency(locale: 'en_AE', symbol: 'AED ');
+
   return Container(
     padding: const EdgeInsets.all(16),
     decoration: BoxDecoration(
@@ -353,13 +360,14 @@ class _BookingScreenState extends State<BookingScreen> {
         if (selectedTimeSlot != null)
           _summaryRow("Time", selectedTimeSlot!),
         const Divider(),
-        _summaryRow("Total", "د.إ$price", isBold: true),
+        _summaryRow("Total", currencyFormat.format(price), isBold: true),
         const SizedBox(height: 6),
         const Text("One-time payment", style: TextStyle(color: Colors.grey)),
       ],
     ),
   );
 }
+
 
   Widget _summaryRow(String label, String value, {bool isBold = false}) {
     return Padding(

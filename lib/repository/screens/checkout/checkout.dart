@@ -32,10 +32,12 @@ class _CheckoutUIState extends State<Checkout> {
       final response = await http.post(
         url,
         headers: {'Content-Type': 'application/json'},
-        body: json.encode({'amount': widget.price * 100, 'currency': 'usd'}),
+        body: json.encode({'amount': widget.price * 100, 'currency': 'AED'}),
       );
 
       if (response.statusCode != 200) {
+        print('Response status: ${response.statusCode}');
+        print('Response body: ${response.body}');
         throw Exception("Failed to fetch payment intent");
       }
 
@@ -66,8 +68,6 @@ class _CheckoutUIState extends State<Checkout> {
 
   @override
   Widget build(BuildContext context) {
-    DateFormat('MMM d, yyyy').format(widget.selectedDate);
-
     return Scaffold(
       backgroundColor: const Color(0xFFF2F5F9),
       appBar: AppBar(
@@ -87,7 +87,7 @@ class _CheckoutUIState extends State<Checkout> {
               child: ElevatedButton.icon(
                 onPressed: !isLoading ? _startPayment : null,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFFF54A00),
+                  backgroundColor: const Color(0xFFF54A00),
                   disabledBackgroundColor: Colors.grey,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(14),
@@ -96,7 +96,13 @@ class _CheckoutUIState extends State<Checkout> {
                 ),
                 icon: isLoading
                     ? const SizedBox(
-                        width: 22, height: 22, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                        width: 22,
+                        height: 22,
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 2,
+                        ),
+                      )
                     : const Icon(Icons.payment, color: Colors.white),
                 label: Text(
                   isLoading ? 'Processing...' : 'Continue to Pay',
@@ -111,6 +117,11 @@ class _CheckoutUIState extends State<Checkout> {
   }
 
   Widget _buildBookingSummary() {
+    final formattedPrice = NumberFormat.currency(
+      locale: 'en_AE',
+      symbol: 'AED ',
+    ).format(widget.price);
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -124,7 +135,7 @@ class _CheckoutUIState extends State<Checkout> {
           _summaryRow("Date", DateFormat('MMM d, yyyy').format(widget.selectedDate)),
           _summaryRow("Time", widget.selectedTimeSlot),
           const Divider(),
-          _summaryRow("Total", "\$${widget.price}", isBold: true),
+          _summaryRow("Total", formattedPrice, isBold: true),
           const SizedBox(height: 6),
           const Text("One-time payment", style: TextStyle(color: Colors.grey)),
         ],
@@ -138,7 +149,7 @@ class _CheckoutUIState extends State<Checkout> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label),  
+          Text(label),
           Text(
             value,
             style: TextStyle(fontWeight: isBold ? FontWeight.bold : FontWeight.normal),
