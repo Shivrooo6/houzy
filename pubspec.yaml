@@ -15,8 +15,6 @@ dependencies:
   firebase_auth: ^4.17.3
   cloud_firestore: ^4.13.5
   google_sign_in: ^6.2.1
-  firebase_messaging: ^14.7.8
-  flutter_local_notifications: ^17.0.0
 
   # UI & Utils
   auto_size_text: ^3.0.0
@@ -32,8 +30,7 @@ dependencies:
   shimmer: ^2.0.0
   animate_do: ^3.0.2
   flutter_stripe: ^9.4.0
-  provider: ^6.1.5
-  cached_network_image: ^3.2.3
+
 
 dev_dependencies:
   flutter_test:
