@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:houzy/repository/screens/checkout/checkout.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class BookingScreen extends StatefulWidget {
   const BookingScreen({super.key});
@@ -34,6 +35,31 @@ class _BookingScreenState extends State<BookingScreen> {
     {'label': '3.5 Hours', 'price': 160},
     {'label': '4 Hours', 'price': 180},
   ];
+
+  Future<void> saveBookingToFirestore() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    final int basePrice = durations[selectedDurationIndex]['price'];
+    final int totalPrice = (isPetFriendly ? basePrice + 25 : basePrice) * selectedWorkerCount;
+
+    final bookingData = {
+      'userId': user.uid,
+      'email': user.email,
+      'duration': durations[selectedDurationIndex]['label'],
+      'price': totalPrice,
+      'workers': selectedWorkerCount,
+      'isPetFriendly': isPetFriendly,
+      'instructions': specialInstructionsController.text.trim(),
+      'date': selectedDate != null ? Timestamp.fromDate(selectedDate!) : null,
+      'timeSlot': selectedTimeSlot,
+      'timestamp': Timestamp.now(),
+    };
+
+    final docRef = await FirebaseFirestore.instance.collection('bookings').add(bookingData);
+
+
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -73,7 +99,7 @@ class _BookingScreenState extends State<BookingScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(durations[index]['label']),
-                        Text("AED ${durations[index]['price']}", style: const TextStyle(fontWeight: FontWeight.bold)),
+                        Text("AED \${durations[index]['price']}", style: const TextStyle(fontWeight: FontWeight.bold)),
                       ],
                     ),
                   ),
@@ -88,7 +114,7 @@ class _BookingScreenState extends State<BookingScreen> {
                   int worker = index + 1;
                   bool isSelected = selectedWorkerCount == worker;
                   return ChoiceChip(
-                    label: Text("$worker Needed"),
+                    label: Text("\$worker Needed"),
                     selected: isSelected,
                     onSelected: (_) => setState(() => selectedWorkerCount = worker),
                     selectedColor: Colors.orange[200],
@@ -112,7 +138,8 @@ class _BookingScreenState extends State<BookingScreen> {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: (selectedDate != null && selectedTimeSlot != null)
-                      ? () {
+                      ? () async {
+                          await saveBookingToFirestore();
                           Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -151,9 +178,7 @@ class _BookingScreenState extends State<BookingScreen> {
           const Spacer(),
           IconButton(
             icon: const Icon(Icons.shopping_cart_outlined),
-            onPressed: () {
-              
-            },
+            onPressed: () {},
           ),
           GestureDetector(
             onTap: () {
@@ -171,14 +196,10 @@ class _BookingScreenState extends State<BookingScreen> {
                         radius: 40,
                         backgroundImage: user?.photoURL != null
                             ? NetworkImage(user!.photoURL!)
-                            : const AssetImage('assets/images/placeholder.png')
-                                as ImageProvider,
+                            : const AssetImage('assets/images/placeholder.png') as ImageProvider,
                       ),
                       const SizedBox(height: 8),
-                      Text(
-                        user?.email ?? 'No email',
-                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-                      ),
+                      Text(user?.email ?? 'No email', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
                       const SizedBox(height: 16),
                       ListTile(
                         leading: const Icon(Icons.person),
@@ -372,5 +393,4 @@ class _BookingScreenState extends State<BookingScreen> {
       ),
     );
   }
-  }
-
+}
