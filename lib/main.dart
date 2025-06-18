@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
+import 'package:houzy/repository/screens/booking/bookingscreen.dart';
 
 import 'firebase_options.dart';
 import 'package:houzy/repository/screens/bottomnav/bottomnavscreen.dart';
@@ -52,6 +53,7 @@ class MyApp extends StatelessWidget {
         '/login': (context) => const LoginScreen(),
         '/home': (context) => BottomNavScreen(),
         '/account': (context) => const AccountScreen(),
+        '/booking': (context) => BookingScreen(),
 
         // ⚠️ Checkout route should only be used with Navigator.push() and real data
         // This is just a fallback example with dummy data for dev testing

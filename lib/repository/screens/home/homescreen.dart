@@ -73,6 +73,58 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       setState(() => isLoading = false);
     }
   }
+
+  void _showServiceDetailsDrawer(BuildContext context, String label) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (_) {
+        return Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                label,
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                "This package includes general cleaning of your home for $label. Ideal for apartments, small homes, or routine refreshes.",
+                style: const TextStyle(fontSize: 14, color: Colors.black54),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    Navigator.pushNamed(context, '/booking');
+                  },
+                  icon: const Icon(Icons.arrow_forward),
+                  label: const Text("Book Now"),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.orange,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
+              )
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   Widget _buildLoadingOverlay() {
     return BackdropFilter(
       filter: ImageFilter.blur(sigmaX: 6.0, sigmaY: 6.0),
@@ -89,30 +141,21 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     final user = FirebaseAuth.instance.currentUser;
 
     return Padding(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
       child: Row(
         children: [
-          Image.asset('assets/images/houzylogoimage.png', height: 50),
+          Image.asset('assets/images/houzylogoimage.png', height: 40),
           const Spacer(),
           IconButton(
-            icon: const Icon(Icons.note_alt_outlined),
-            onPressed: () {
-              _showBookingBottomSheet(context: context);
-            },
-          ),
-          IconButton(
             icon: const Icon(Icons.shopping_cart_outlined),
-            onPressed: () {
-              // TODO: Cart logic
-            },
+            onPressed: () {},
           ),
           GestureDetector(
             onTap: () {
               showModalBottomSheet(
                 context: context,
                 shape: const RoundedRectangleBorder(
-                  borderRadius:
-                      BorderRadius.vertical(top: Radius.circular(16)),
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
                 ),
                 builder: (context) {
                   return Column(
@@ -129,8 +172,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       const SizedBox(height: 8),
                       Text(
                         user?.email ?? 'No email',
-                        style: const TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.w500),
+                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                       ),
                       const SizedBox(height: 16),
                       ListTile(
@@ -143,13 +185,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       ),
                       ListTile(
                         leading: const Icon(Icons.logout, color: Colors.red),
-                        title: const Text('Sign Out',
-                            style: TextStyle(color: Colors.red)),
+                        title: const Text('Sign Out', style: TextStyle(color: Colors.red)),
                         onTap: () async {
                           Navigator.pop(context);
                           await FirebaseAuth.instance.signOut();
-                          Navigator.of(context).pushNamedAndRemoveUntil(
-                              '/login', (route) => false);
+                          Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
                         },
                       ),
                       const SizedBox(height: 16),
@@ -162,8 +202,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               radius: 18,
               backgroundImage: user?.photoURL != null
                   ? NetworkImage(user!.photoURL!)
-                  : const AssetImage('assets/images/placeholder.png')
-                      as ImageProvider,
+                  : const AssetImage('assets/images/placeholder.png') as ImageProvider,
             ),
           ),
         ],
@@ -171,148 +210,216 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        Scaffold(
-          backgroundColor: Colors.white.withOpacity(0.25),
-          body: SingleChildScrollView(
-            child: Column(
-              children: [
-                _buildTopHeader(context),
-                Stack(
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(0),
-                      child: Stack(
-                        children: [
-                          Image.asset(
-                            'assets/images/serviceimage1.png',
-                            width: 390,
-                            height: 390,
-                            fit: BoxFit.cover,
-                          ),
-                          BackdropFilter(
-                            filter: ImageFilter.blur(sigmaX: 8.0, sigmaY: 8.0),
-                            child: Container(
+        SafeArea(
+          child: Scaffold(
+            backgroundColor: Colors.white.withOpacity(0.25),
+            body: SingleChildScrollView(
+              child: Column(
+                children: [
+                  _buildTopHeader(context),
+                  Stack(
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(0),
+                        child: Stack(
+                          children: [
+                            Image.asset(
+                              'assets/images/serviceimage1.png',
+                              width: 390,
                               height: 390,
-                              color: Colors.black.withOpacity(0.25),
+                              fit: BoxFit.cover,
                             ),
-                          ),
-                        ],
+                            BackdropFilter(
+                              filter: ImageFilter.blur(sigmaX: 8.0, sigmaY: 8.0),
+                              child: Container(
+                                height: 390,
+                                color: Colors.black.withOpacity(0.25),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                    Positioned.fill(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Card(
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16)),
-                            margin: const EdgeInsets.symmetric(horizontal: 24),
-                            elevation: 6,
-                            child: Padding(
-                              padding: const EdgeInsets.all(16.0),
-                              child: Column(
-                                children: [
-                                  const Text(
-                                    "Where would you like to receive your service?",
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.w600),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                  const SizedBox(height: 12),
-                                  ElevatedButton.icon(
-                                    onPressed: _getCurrentLocation,
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.orange,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
+                      Positioned.fill(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Card(
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16)),
+                              margin: const EdgeInsets.symmetric(horizontal: 24),
+                              elevation: 6,
+                              child: Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: Column(
+                                  children: [
+                                    const Text(
+                                      "Where would you like to receive your service?",
+                                      style: TextStyle(fontWeight: FontWeight.w600),
+                                      textAlign: TextAlign.center,
                                     ),
-                                    icon: const Icon(Icons.my_location),
-                                    label: const Text("Set my location"),
-                                  ),
-                                  const SizedBox(height: 10),
+                                    const SizedBox(height: 12),
+                                    AnimatedSwitcher(
+                                      duration: const Duration(milliseconds: 700),
+                                      transitionBuilder:
+                                          (Widget child, Animation<double> animation) {
+                                        return FadeTransition(
+                                          opacity: animation,
+                                          child: ScaleTransition(
+                                            scale: animation,
+                                            child: child,
+                                          ),
+                                        );
+                                      },
+                                      child: currentAddress.isEmpty ||
+                                              currentAddress == 'Fetching location...'
+                                          ? ElevatedButton.icon(
+                                              key: const ValueKey('button'),
+                                              onPressed: _getCurrentLocation,
+                                              style: ElevatedButton.styleFrom(
+                                                backgroundColor: Colors.orange,
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius: BorderRadius.circular(12),
+                                                ),
+                                              ),
+                                              icon: const Icon(Icons.my_location),
+                                              label: const Text("Set my location"),
+                                            )
+                                          : Column(
+                                              key: const ValueKey('address'),
+                                              children: [
+                                                const Icon(Icons.location_on,
+                                                    color: Colors.green),
+                                                const SizedBox(height: 6),
+                                                Text(
+                                                  currentAddress,
+                                                  style: const TextStyle(
+                                                      color: Colors.black87,
+                                                      fontWeight: FontWeight.w500),
+                                                  textAlign: TextAlign.center,
+                                                ),
+                                              ],
+                                            ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 29),
+                            FadeTransition(
+                              opacity: _fadeAnimation,
+                              child: Column(
+                                children: const [
                                   Text(
-                                    currentAddress,
+                                    "Leave your to-do list to us!",
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  SizedBox(height: 6),
+                                  Text(
+                                    "Check out some of our top home services:",
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.white70,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+                  const Padding(
+                    padding: EdgeInsets.all(16.0),
+                    child: Column(
+                      children: [
+                        Text(
+                          "Choose Your Cleaning Service",
+                          style:
+                              TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                        ),
+                        SizedBox(height: 4),
+                        Text(
+                          "Select the perfect cleaning service for your needs",
+                          style: TextStyle(color: Colors.grey),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // Service Cards Grid
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: GridView.builder(
+                      physics: const NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        childAspectRatio: 1.3,
+                        mainAxisSpacing: 12,
+                        crossAxisSpacing: 12,
+                      ),
+                      itemCount: 7,
+                      itemBuilder: (context, index) {
+                        double duration = 1.0 + (index * 0.5);
+                        String label =
+                            "${duration.toStringAsFixed(1)} Hour Cleaning";
+                        return GestureDetector(
+                          onTap: () {
+                            _showServiceDetailsDrawer(context, label);
+                          },
+                          child: Card(
+                            elevation: 4,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(12.0),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Icon(Icons.cleaning_services_rounded,
+                                      size: 40, color: Colors.orange),
+                                  const SizedBox(height: 12),
+                                  Text(
+                                    label,
                                     style: const TextStyle(
-                                        color: Colors.black87,
-                                        fontWeight: FontWeight.w500),
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14),
                                     textAlign: TextAlign.center,
                                   ),
                                 ],
                               ),
                             ),
                           ),
-                          const SizedBox(height: 29),
-                          FadeTransition(
-                            opacity: _fadeAnimation,
-                            child: Column(
-                              children: const [
-                                Text(
-                                  "Leave your to-do list to us!",
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                                SizedBox(height: 6),
-                                Text(
-                                  "Check out some of our top home services:",
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.white70,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          )
-                        ],
-                      ),
+                        );
+                      },
                     ),
-                  ],
-                ),
-                const SizedBox(height: 24),
-                const Padding(
-                  padding: EdgeInsets.all(16.0),
-                  child: Column(
-                    children: [
-                      Text(
-                        "Choose Your Cleaning Service",
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        "What Our Customers Say",
                         style: TextStyle(
                             fontSize: 20, fontWeight: FontWeight.bold),
                       ),
-                      SizedBox(height: 4),
-                      Text(
-                        "Select the perfect cleaning service for your needs",
-                        style: TextStyle(color: Colors.grey),
-                      ),
-                    ],
-                  ),
-                ),
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      "What Our Customers Say",
-                      style: TextStyle(
-                          fontSize: 20, fontWeight: FontWeight.bold),
                     ),
                   ),
-                ),
-                ...List.generate(
-                  5,
-                  (index) => FadeTransition(
-                    opacity: _fadeAnimation,
-                    child: const TestimonialCard(),
-                  ),
-                ),
-                const SizedBox(height: 32),
-              ],
+                ],
+              ),
             ),
           ),
         ),
@@ -320,107 +427,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       ],
     );
   }
-
-  
- void _showBookingBottomSheet({required BuildContext context}) {
-  showModalBottomSheet(
-    context: context,
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-    ),
-    builder: (context) {
-        return Padding(
-    padding: const EdgeInsets.all(16.0),
-    child: ConstrainedBox(
-      constraints: BoxConstraints(
-        maxHeight: 400,
-      ),
-      child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              "Currently Ongoing Subscription",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 6),
-            const Text("All Current ongoing subscriptions comes here"),
-            const SizedBox(height: 12),
-            ...List.generate(3, (index) {
-              return Card(
-                margin: const EdgeInsets.symmetric(vertical: 6),
-                child: ListTile(
-                  title: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
-                      Text("Service Name"),
-                      SizedBox(height: 15),
-                      Text(
-                        "Card Content",
-                        style: TextStyle(fontSize: 12),
-                      ),
-                    ],
-                  ),
-                  trailing: ElevatedButton(
-                    onPressed: () {},
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFF54A00),
-                      minimumSize: const Size(80, 32), 
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6), 
-                    ),
-                    child: const Text(
-                      "Detailed View",
-                      style: TextStyle(fontSize: 12), 
-                    ),
-                  ),
-                ),
-              );
-            }),
-
-            const SizedBox(height: 6),
-            ...List.generate(3, (index) {
-              return Card(
-                margin: const EdgeInsets.symmetric(vertical: 6),
-                child: ListTile(
-                  title: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
-                      Text("Service Name"),
-                      SizedBox(height: 15), 
-                      Text(
-                        "Card Content",
-                        style: TextStyle(fontSize: 12),
-                      ),
-
-                    ],
-                  ),
-                  trailing: ElevatedButton(
-                    onPressed: () {},
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFF54A00),
-                      minimumSize: const Size(80, 32), 
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6), 
-                    ),
-                    child: const Text(
-                      "Detailed View",
-                      style: TextStyle(fontSize: 12), 
-                    ),
-                  ),
-                ),
-              );
-            }),
-
-          ],
-        ),
-      ),
-    ),
-  );
 }
-  );
-}
-
-}
-
 class TestimonialCard extends StatelessWidget {
   const TestimonialCard({super.key});
 
